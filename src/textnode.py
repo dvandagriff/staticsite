@@ -1,26 +1,27 @@
-from __future__ import annotations
 from enum import Enum
-from typing import Optional
+
 
 class TextType(Enum):
-    PLAIN = "plain"
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
     LINK = "link"
     IMAGE = "image"
 
-class TextNode:
 
-    def __init__(self, text:str, text_type:TextType, url:Optional[str]=None):
+class TextNode:
+    def __init__(self, text, text_type, url=None):
         self.text = text
         self.text_type = text_type
         self.url = url
 
-    def __eq__(self, other) -> bool:
-        if self.text == other.text and self.text_type == other.text_type:
-            return True
-        return False
+    def __eq__(self, other):
+        return (
+            self.text_type == other.text_type
+            and self.text == other.text
+            and self.url == other.url
+        )
 
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
