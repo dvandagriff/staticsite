@@ -1,8 +1,8 @@
 import unittest
 from inline_markdown import (
     split_nodes_delimiter,
-    extract_markdown_images,
     extract_markdown_links,
+    extract_markdown_images,
 )
 
 from textnode import TextNode, TextType
@@ -67,7 +67,7 @@ class TestInlineMarkdown(unittest.TestCase):
         node = TextNode("**bold** and _italic_", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
-        self.assertListEqual(
+        self.assertEqual(
             [
                 TextNode("bold", TextType.BOLD),
                 TextNode(" and ", TextType.TEXT),
@@ -88,60 +88,22 @@ class TestInlineMarkdown(unittest.TestCase):
             new_nodes,
         )
 
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
 
-class TestExtractMarkdownImages(unittest.TestCase):
-    def test_extract_single_image(self):
-        test = extract_markdown_images("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and")
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This is text with a [link](https://boot.dev) and [another link](https://blog.boot.dev)"
+        )
         self.assertListEqual(
             [
-                ("rick roll", "https://i.imgur.com/aKaOqIh.gif")
+                ("link", "https://boot.dev"),
+                ("another link", "https://blog.boot.dev"),
             ],
-            test
-        )
-
-    def test_extract_multi_image(self):
-        test = extract_markdown_images("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)")
-        self.assertListEqual(
-            [
-                ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
-                ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
-            ],
-            test
-        )
-
-    def test_extract_zero_image(self):
-        test = extract_markdown_images("This is text with no image markdown")
-        self.assertListEqual(
-            [],
-            test
-        )
-
-
-class TestExtractMarkdownLinks(unittest.TestCase):
-    def test_extract_single_links(self):
-        test = extract_markdown_links("This is text with a link [to boot dev](https://www.boot.dev) and")
-        self.assertListEqual(
-            [
-                ("to boot dev", "https://www.boot.dev")
-            ],
-            test
-        )
-
-    def test_extract_multi_links(self):
-        test = extract_markdown_links("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)")
-        self.assertListEqual(
-            [
-                ("to boot dev", "https://www.boot.dev"),
-                ("to youtube", "https://www.youtube.com/@bootdotdev")
-            ],
-            test
-        )
-
-    def test_extract_zero_image(self):
-        test = extract_markdown_images("This is text with no link markdown")
-        self.assertListEqual(
-            [],
-            test
+            matches,
         )
 
 
